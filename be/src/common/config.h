@@ -645,6 +645,9 @@ CONF_Int64(pipeline_yield_max_chunks_moved, "100");
 // yield PipelineDriver when maximum time in nano-seconds has spent
 // in current execution round.
 CONF_Int64(pipeline_yield_max_time_spent, "100000000");
+// yield PipelineDriver when maximum time in nano-seconds has spent in current execution round,
+// if it runs in the dispatcher owned by other workgroup, which has running drivers.
+CONF_Int64(pipeline_yield_preempt_max_time_spent, "20000000");
 // the number of scan threads pipeline engine.
 CONF_Int64(pipeline_scan_thread_pool_thread_num, "0");
 // queue size of scan thread pool for pipeline engine.
@@ -653,6 +656,9 @@ CONF_Int64(pipeline_scan_thread_pool_queue_size, "102400");
 CONF_Int64(pipeline_scan_max_tasks_per_operator, "4");
 // The max number of io tasks for each scan operator.
 CONF_Int64(pipeline_scan_task_yield_max_tims_spent, "100000000");
+// yield scan io task when maximum time in nano-seconds has spent in current execution round,
+// if it runs in the dispatcher owned by other workgroup, which has running drivers.
+CONF_Int64(pipeline_scan_task_yield_preempt_max_time_spent, "20000000");
 // the number of execution threads for pipeline engine.
 CONF_Int64(pipeline_exec_thread_pool_thread_num, "0");
 // The max schedule period for adjusting io weight of each workgroup.
