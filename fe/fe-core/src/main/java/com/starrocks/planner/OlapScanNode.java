@@ -650,7 +650,7 @@ public class OlapScanNode extends ScanNode {
         if (rangePartitionNumLimit <= 0) {
             rangePartitionNumLimit = Integer.MAX_VALUE;
         }
-        if (selectedPartitionNum > rangePartitionNumLimit) {
+        if (partitionInfo.isRangePartition() && selectedPartitionNum > rangePartitionNumLimit) {
             throw new AnalysisException(String.format("Selected partition num %d exceeded max allowed scan range partition num limit %d for OLAP scan node", selectedPartitionNum, rangePartitionNumLimit));
         }
     }
