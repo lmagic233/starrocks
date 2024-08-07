@@ -645,6 +645,14 @@ public class OlapScanNode extends ScanNode {
         selectedPartitionNum = selectedPartitionIds.size();
         LOG.debug("partition prune cost: {} ms, partitions: {}",
                 (System.currentTimeMillis() - start), selectedPartitionIds);
+
+        int rangePartitionNumLimit = ConnectContext.get().getSessionVariable().getOlapScanRangePartitionNumLimit();
+        if (rangePartitionNumLimit <= 0) {
+            rangePartitionNumLimit = Integer.MAX_VALUE;
+        }
+        if (selectedPartitionNum > rangePartitionNumLimit) {
+            throw new AnalysisException(String.format("Selected partition num %d exceeded max allowed scan range partition num limit %d for OLAP scan node", selectedPartitionNum, rangePartitionNumLimit));
+        }
     }
 
     public void selectBestRollupByRollupSelector() {
