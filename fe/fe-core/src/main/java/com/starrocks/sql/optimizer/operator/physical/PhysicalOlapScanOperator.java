@@ -41,6 +41,7 @@ public class PhysicalOlapScanOperator extends PhysicalScanOperator {
     private DistributionSpec distributionSpec;
     private long selectedIndexId;
     private List<Long> selectedTabletId;
+    private List<Long> hintsTabletId;
     private List<Long> hintsReplicaId;
     private List<Long> selectedPartitionId;
 
@@ -70,6 +71,7 @@ public class PhysicalOlapScanOperator extends PhysicalScanOperator {
                                     long selectedIndexId,
                                     List<Long> selectedPartitionId,
                                     List<Long> selectedTabletId,
+                                    List<Long> hintsTabletId,
                                     List<Long> hintsReplicaId,
                                     List<ScalarOperator> prunedPartitionPredicates,
                                     Projection projection,
@@ -79,6 +81,7 @@ public class PhysicalOlapScanOperator extends PhysicalScanOperator {
         this.selectedIndexId = selectedIndexId;
         this.selectedPartitionId = selectedPartitionId;
         this.selectedTabletId = selectedTabletId;
+        this.hintsTabletId = hintsTabletId;
         this.hintsReplicaId = hintsReplicaId;
         this.prunedPartitionPredicates = prunedPartitionPredicates;
         this.usePkIndex = usePkIndex;
@@ -90,6 +93,7 @@ public class PhysicalOlapScanOperator extends PhysicalScanOperator {
         this.selectedIndexId = scanOperator.getSelectedIndexId();
         this.selectedPartitionId = scanOperator.getSelectedPartitionId();
         this.selectedTabletId = scanOperator.getSelectedTabletId();
+        this.hintsTabletId = scanOperator.getHintsTabletIds();
         this.hintsReplicaId = scanOperator.getHintsReplicaIds();
         this.prunedPartitionPredicates = scanOperator.getPrunedPartitionPredicates();
         this.usePkIndex = scanOperator.isUsePkIndex();
@@ -113,6 +117,10 @@ public class PhysicalOlapScanOperator extends PhysicalScanOperator {
 
     public List<Long> getSelectedTabletId() {
         return selectedTabletId;
+    }
+
+    public List<Long> getHintsTabletId() {
+        return hintsTabletId;
     }
 
     public List<Long> getHintsReplicaId() {
@@ -259,6 +267,7 @@ public class PhysicalOlapScanOperator extends PhysicalScanOperator {
             builder.distributionSpec = operator.distributionSpec;
             builder.selectedIndexId = operator.selectedIndexId;
             builder.selectedTabletId = operator.selectedTabletId;
+            builder.hintsTabletId = operator.hintsTabletId;
             builder.hintsReplicaId = operator.hintsReplicaId;
             builder.selectedPartitionId = operator.selectedPartitionId;
 

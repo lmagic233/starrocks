@@ -792,6 +792,14 @@ public class PlanFragmentBuilder {
             currentExecGroup.add(scanNode);
             // set tablet
             try {
+                int selectedPartitionNumLimit = ConnectContext.get().getSessionVariable().getOlapScanSelectedPartitionNumLimit();
+                if (CollectionUtils.isEmpty(node.getHintsTabletId()) && CollectionUtils.isEmpty(node.getHintsReplicaId())
+                        && node.getSelectedPartitionId().size() > selectedPartitionNumLimit) {
+                    throw new UserException(String.format(
+                        "Selected partition num %d exceeded max allowed selected partition num limit %d for OLAP scan node",
+                        node.getSelectedPartitionId().size(), selectedPartitionNumLimit));
+                }
+
                 scanNode.updateScanInfo(node.getSelectedPartitionId(),
                         node.getSelectedTabletId(),
                         node.getHintsReplicaId(),
@@ -835,7 +843,7 @@ public class PlanFragmentBuilder {
                 scanNode.setTotalTabletsNum(totalTabletsNum);
             } catch (UserException e) {
                 throw new StarRocksPlannerException(
-                        "Build Exec OlapScanNode fail, scan info is invalid", INTERNAL_ERROR, e);
+                        "Build Exec OlapScanNode fail, scan info is invalid, cause: " + e.getMessage(), INTERNAL_ERROR, e);
             }
 
             // set slot

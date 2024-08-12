@@ -755,6 +755,8 @@ public class SessionVariable implements Serializable, Writable, Cloneable {
     // regexp predicate is less efficient than like predicates.
     public static final String LIKE_PREDICATE_CONSOLIDATE_MIN = "like_predicate_consolidate_min";
 
+    public static final String OLAP_SCAN_SELECTED_PARTITION_NUM_LIMIT = "olap_scan_selected_partition_num_limit";
+
     public static final List<String> DEPRECATED_VARIABLES = ImmutableList.<String>builder()
             .add(CODEGEN_LEVEL)
             .add(MAX_EXECUTION_TIME)
@@ -2163,6 +2165,10 @@ public class SessionVariable implements Serializable, Writable, Cloneable {
 
     @VarAttr(name = LIKE_PREDICATE_CONSOLIDATE_MIN)
     private int likePredicateConsolidateMin = 2;
+
+    @VarAttr(name = OLAP_SCAN_SELECTED_PARTITION_NUM_LIMIT)
+    private int olapScanSelectedPartitionNumLimit = -1;
+
     public int getExprChildrenLimit() {
         return exprChildrenLimit;
     }
@@ -3925,6 +3931,14 @@ public class SessionVariable implements Serializable, Writable, Cloneable {
 
     public void setLikePredicateConsolidateMin(int value) {
         this.likePredicateConsolidateMin = value;
+    }
+
+    public int getOlapScanSelectedPartitionNumLimit() {
+        return olapScanSelectedPartitionNumLimit <= 0 ? Integer.MAX_VALUE : olapScanSelectedPartitionNumLimit;
+    }
+
+    public void setOlapScanSelectedPartitionNumLimit(int olapScanSelectedPartitionNumLimit) {
+        this.olapScanSelectedPartitionNumLimit = olapScanSelectedPartitionNumLimit;
     }
 
     // Serialize to thrift object
