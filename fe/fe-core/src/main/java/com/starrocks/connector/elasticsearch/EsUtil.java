@@ -38,6 +38,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.starrocks.catalog.ArrayType;
 import com.starrocks.catalog.Column;
 import com.starrocks.catalog.ScalarType;
 import com.starrocks.catalog.Type;
@@ -51,8 +52,10 @@ import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.TimeZone;
 
 public class EsUtil {
@@ -63,7 +66,8 @@ public class EsUtil {
             }
 
             RangePartitionDesc rangePartitionDesc = (RangePartitionDesc) partitionDesc;
-            if (rangePartitionDesc.getPartitionColNames() == null || rangePartitionDesc.getPartitionColNames().isEmpty()) {
+            if (rangePartitionDesc.getPartitionColNames() == null ||
+                    rangePartitionDesc.getPartitionColNames().isEmpty()) {
                 throw new SemanticException("No partition columns.");
             }
 
@@ -108,7 +112,8 @@ public class EsUtil {
     /**
      * Generate columns from ElasticSearch.
      **/
-    public static List<Column> convertColumnSchema(EsRestClient client, String index) throws AnalysisException {
+    public static List<Column> convertColumnSchema(EsRestClient client, String index, Set<String> arrayFields)
+            throws AnalysisException {
         List<Column> columns = new ArrayList<>();
         String mappings = client.getMapping(index);
         JSONObject properties = parseProperties(index, mappings);
@@ -121,11 +126,18 @@ public class EsUtil {
             Type type = Type.JSON;
             if (columnAttr.has("type")) {
                 type = convertType(columnAttr.get("type").toString());
+                if (arrayFields.contains(columnName)) {
+                    type = new ArrayType(type);
+                }
             }
             Column column = new Column(columnName, type, true);
             columns.add(column);
         }
         return columns;
+    }
+
+    public static List<Column> convertColumnSchema(EsRestClient client, String index) throws AnalysisException {
+        return convertColumnSchema(client, index, new HashSet<>());
     }
 
     /**

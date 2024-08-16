@@ -84,6 +84,7 @@ public class EsTable extends Table implements GsonPostProcessable {
     public static final String KEY_WAN_ONLY = "es.nodes.wan.only";
     public static final String KEY_ES_NET_SSL = "es.net.ssl";
     public static final String KEY_TIME_ZONE = "time_zone";
+    public static final String KEY_ARRAY_FIELDS = "array_fields";
 
     // tableContext is used for being convenient to persist some configuration parameters uniformly
     @SerializedName(value = "tc")

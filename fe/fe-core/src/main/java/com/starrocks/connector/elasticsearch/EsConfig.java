@@ -17,6 +17,7 @@ package com.starrocks.connector.elasticsearch;
 import com.starrocks.connector.config.Config;
 import com.starrocks.connector.config.ConnectorConfig;
 
+import static com.starrocks.catalog.EsTable.KEY_ARRAY_FIELDS;
 import static com.starrocks.catalog.EsTable.KEY_DOC_VALUE_SCAN;
 import static com.starrocks.catalog.EsTable.KEY_ES_NET_SSL;
 import static com.starrocks.catalog.EsTable.KEY_HOSTS;
@@ -51,11 +52,21 @@ public class EsConfig extends ConnectorConfig {
             desc = "Whether to enable docvalues scan optimization for fetching fields more fast",
             defaultValue = "true")
     private boolean enableDocValueScan;
-    
+
     @Config(key = KEY_KEYWORD_SNIFF,
             desc = "Whether to enable sniffing keyword for filtering more reasonable",
             defaultValue = "true")
     private boolean enableKeywordSniff;
+
+    // Fields that should be treated as arrays when building Elasticsearch external table.
+    // Since Elasticsearch makes no distinction between scalar and array types, we should manually specify them.
+    // The format is: `field1,index2:field2...`
+    // which means `field1` in all indices and `field2` in `index2` are arrays.
+    @Config(key = KEY_ARRAY_FIELDS,
+            desc = "Fields that should be treated as arrays when building Elasticsearch external table. " +
+                    "The format is: `field1,index2:field2,...`.",
+            defaultValue = "")
+    private String arrayFields;
 
     public String[] getNodes() {
         return nodes;
@@ -111,5 +122,13 @@ public class EsConfig extends ConnectorConfig {
 
     public void setEnableKeywordSniff(boolean enableKeywordSniff) {
         this.enableKeywordSniff = enableKeywordSniff;
+    }
+
+    public String getArrayFields() {
+        return arrayFields;
+    }
+
+    public void setArrayFields(String arrayFields) {
+        this.arrayFields = arrayFields;
     }
 }
