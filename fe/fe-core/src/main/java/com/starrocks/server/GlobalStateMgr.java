@@ -495,8 +495,13 @@ public class GlobalStateMgr {
     }
 
     public TNodesInfo createNodesInfo(long warehouseId, SystemInfoService systemInfoService) {
+        return createNodesInfo(warehouseId, systemInfoService, false);
+    }
+
+    public TNodesInfo createNodesInfo(long warehouseId, SystemInfoService systemInfoService, boolean isExternalTable) {
         TNodesInfo nodesInfo = new TNodesInfo();
-        if (RunMode.isSharedDataMode()) {
+        // TODO should judge whether an external table is a cloud-native (lake) table
+        if (RunMode.isSharedDataMode() && !isExternalTable) {
             List<Long> computeNodeIds = warehouseMgr.getAllComputeNodeIds(warehouseId);
             for (Long cnId : computeNodeIds) {
                 ComputeNode cn = systemInfoService.getBackendOrComputeNode(cnId);

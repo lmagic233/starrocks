@@ -67,6 +67,7 @@ import com.starrocks.catalog.ColumnId;
 import com.starrocks.catalog.PhysicalPartition;
 import com.starrocks.catalog.RangePartitionInfo;
 import com.starrocks.catalog.Replica;
+import com.starrocks.catalog.Table;
 import com.starrocks.catalog.Tablet;
 import com.starrocks.common.AnalysisException;
 import com.starrocks.common.Config;
@@ -255,7 +256,7 @@ public class OlapTableSink extends DataSink {
         tSink.setPartition(partitionParam);
         tSink.setLocation(createLocation(dstTable, partitionParam, enableReplicatedStorage, warehouseId));
         tSink.setNodes_info(GlobalStateMgr.getCurrentState().createNodesInfo(warehouseId,
-                getSystemInfoService(dstTable)));
+                    getSystemInfoService(dstTable), dstTable instanceof ExternalOlapTable));
         tSink.setPartial_update_mode(this.partialUpdateMode);
         tSink.setAutomatic_bucket_size(automaticBucketSize);
         if (canUseColocateMVIndex(dstTable)) {
